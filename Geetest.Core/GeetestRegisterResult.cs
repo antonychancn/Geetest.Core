@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Geetest.Core
 {
-    public class RegisterResult
+    public class GeetestRegisterResult
     {
         public bool Success { get; set; }
 

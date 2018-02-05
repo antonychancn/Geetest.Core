@@ -7,8 +7,8 @@ namespace Geetest.Core
 {
     public interface IGeetestManager
     {
-        Task<RegisterResult> Register();
+        Task<GeetestRegisterResult> RegisterAsync();
 
-        Task Validate();
+        Task<bool> ValidateAsync(GeetestValidate geetestValidate);
     }
 }

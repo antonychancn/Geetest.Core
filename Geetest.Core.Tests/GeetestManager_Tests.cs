@@ -18,8 +18,11 @@ namespace Geetest.Core.Tests
         [Fact]
         public async Task Register_Test()
         {
-            var reg = await _geetestManager.Register();
-            reg.Success.ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task Validate_Test()
+        {
         }
     }
 }
