@@ -20,33 +20,35 @@ namespace Geetest.Core
         {
             using (var http = new HttpClient())
             {
+                http.Timeout = _geetestConfiguration.Timeout;
+
                 var url = _geetestConfiguration.Protocol + _geetestConfiguration.ApiServerUrl +
                           _geetestConfiguration.ApiRegisterUrl + $"?{_geetestConfiguration.ToQueryString()}";
 
-                var responseMessage = await http.GetAsync(url);
-
-                var result = JsonConvert.DeserializeObject<GeetestRegisterResult>(
-                    await responseMessage.Content.ReadAsStringAsync());
-
-                if (!responseMessage.IsSuccessStatusCode || result.Challenge.IsNullOrWhiteSpace())
+                var result = new GeetestRegisterResult
                 {
-                    //Dang 🐔
-                    result.Success = false;
-
-                    var rnd = new Random();
-                    var a = rnd.Next(0, 90).ToString().Md5();
-                    var b = rnd.Next(0, 90).ToString().Md5();
-
-                    result.Challenge = a + b.Substring(0, 2);
-                }
-                else
+                    Success = false,
+                    Gt = _geetestConfiguration.Id,
+                    Challenge = Guid.NewGuid().ToString("N"),
+                    NewCaptcha = true
+                };
+                try
                 {
-                    result.Success = true;
-                    result.Challenge = (result.Challenge + _geetestConfiguration.Key).Md5();
+                    var responseMessage = await http.GetAsync(url);
+                    if (responseMessage.IsSuccessStatusCode)
+                    {
+                        result.Challenge = JsonConvert.DeserializeObject<GeetestRegisterResult>(
+                            await responseMessage.Content.ReadAsStringAsync()).Challenge;
+
+                        result.Success = true;
+                        result.Challenge = (result.Challenge + _geetestConfiguration.Key).Md5();
+                    }
+                }
+                catch (Exception)
+                {
+                    // ignored
                 }
 
-                result.Gt = _geetestConfiguration.Id;
-                result.NewCaptcha = true;
                 return result;
             }
         }
@@ -66,24 +68,39 @@ namespace Geetest.Core
 
             using (var http = new HttpClient())
             {
+                http.Timeout = _geetestConfiguration.Timeout;
+
                 var url = _geetestConfiguration.Protocol + _geetestConfiguration.ApiServerUrl +
                           _geetestConfiguration.ApiValidateUrl;
 
-                var responseMessage = await http.PostAsync(url, new FormUrlEncodedContent(
-                    new List<KeyValuePair<string, string>>
-                    {
-                        new KeyValuePair<string, string>("gt", _geetestConfiguration.Id),
-                        new KeyValuePair<string, string>("seccode", geetestValidate.Seccode),
-                        new KeyValuePair<string, string>("json_format", "1")
-                    }));
+                try
+                {
+                    var responseMessage = await http.PostAsync(url, new FormUrlEncodedContent(
+                        new List<KeyValuePair<string, string>>
+                        {
+                            new KeyValuePair<string, string>("gt", _geetestConfiguration.Id),
+                            new KeyValuePair<string, string>("seccode", geetestValidate.Seccode),
+                            new KeyValuePair<string, string>("json_format",
+                                _geetestConfiguration.JsonFormat ? "1" : "0")
+                        }));
 
-                var result = JsonConvert.DeserializeObject<GeetestValidateResult>(
-                    await responseMessage.Content.ReadAsStringAsync());
-                if (result.Seccode == "false")
+                    if (!responseMessage.IsSuccessStatusCode)
+                    {
+                        return false;
+                    }
+
+                    var result = JsonConvert.DeserializeObject<GeetestValidateResult>(
+                        await responseMessage.Content.ReadAsStringAsync());
+                    if (result.Seccode.Length < 16)
+                    {
+                        return false;
+                    }
+                    return result.Seccode == geetestValidate.Seccode.Md5();
+                }
+                catch (Exception)
                 {
                     return false;
                 }
-                return result.Seccode == geetestValidate.Seccode.Md5();
             }
         }
     }

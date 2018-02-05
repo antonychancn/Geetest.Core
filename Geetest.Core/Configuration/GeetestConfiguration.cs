@@ -1,4 +1,6 @@
-﻿namespace Geetest.Core.Configuration
+﻿using System;
+
+namespace Geetest.Core.Configuration
 {
     public class GeetestConfiguration : IGeetestConfiguration
     {
@@ -12,6 +14,7 @@
             ApiServerUrl = "api.geetest.com";
             ApiRegisterUrl = "/register.php";
             ApiValidateUrl = "/validate.php";
+            Timeout = TimeSpan.FromSeconds(5);
             NewCaptcha = true;
             JsonFormat = true;
         }
@@ -27,6 +30,7 @@
         public string ApiValidateUrl { get; set; }
 
         public string ApiRegisterUrl { get; set; }
+        public TimeSpan Timeout { get; set; }
 
         public bool NewCaptcha { get; set; }
 
@@ -36,7 +40,12 @@
         {
             var jsonFormat = JsonFormat ? "1" : "0";
             return
-                $"gt={Id}&json_format={jsonFormat}&user_id={_clientInfoProvider.UserId}&sdk={_clientInfoProvider.Sdk}&client_type={_clientInfoProvider.ClientType}&ip_address={_clientInfoProvider.IpAddress}";
+                $"gt={Id}&" +
+                $"json_format={jsonFormat}&" +
+                $"user_id={_clientInfoProvider.UserId}&" +
+                $"sdk={_clientInfoProvider.Sdk}&" +
+                $"client_type={_clientInfoProvider.ClientType}&" +
+                $"ip_address={_clientInfoProvider.IpAddress}";
         }
     }
 }

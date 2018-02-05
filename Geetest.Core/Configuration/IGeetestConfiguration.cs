@@ -1,4 +1,6 @@
-﻿namespace Geetest.Core.Configuration
+﻿using System;
+
+namespace Geetest.Core.Configuration
 {
     public interface IGeetestConfiguration
     {
@@ -13,6 +15,8 @@
         string ApiValidateUrl { get; set; }
 
         string ApiRegisterUrl { get; set; }
+
+        TimeSpan Timeout { get; set; }
 
         bool NewCaptcha { get; set; }
 

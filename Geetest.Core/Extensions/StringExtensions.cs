@@ -12,7 +12,6 @@ namespace Geetest.Core
             {
                 var md5Hash = md5.ComputeHash(Encoding.UTF8.GetBytes(str));
                 return BitConverter.ToString(md5Hash).Replace("-", "").ToLower();
-                ;
             }
         }
 
