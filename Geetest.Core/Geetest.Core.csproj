@@ -2,6 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>maliming</Authors>
+    <Company>maliming</Company>
+    <Description>GEETEST - 极验 .NET Core 2.0 SDK</Description>
+    <Copyright>GEETEST极验</Copyright>
+    <PackageLicenseUrl>https://github.com/maliming/Geetest.Core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/maliming/Geetest.Core</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/maliming/Geetest.Core</RepositoryUrl>
+    <PackageTags>Geetest</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
 
 </Project>
