@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Geetest.Core
+﻿namespace Geetest.Core
 {
     public class GeetestRegisterResult
     {

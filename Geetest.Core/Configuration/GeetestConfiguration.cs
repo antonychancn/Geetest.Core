@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Geetest.Core.Configuration
+﻿namespace Geetest.Core.Configuration
 {
     public class GeetestConfiguration : IGeetestConfiguration
     {
-        public GeetestConfiguration()
+        private readonly IClientInfoProvider _clientInfoProvider;
+
+        public GeetestConfiguration(IClientInfoProvider clientInfoProvider)
         {
+            _clientInfoProvider = clientInfoProvider;
+
             Protocol = "https://";
             ApiServerUrl = "api.geetest.com";
             ApiRegisterUrl = "/register.php";
@@ -31,11 +31,12 @@ namespace Geetest.Core.Configuration
         public bool NewCaptcha { get; set; }
 
         public bool JsonFormat { get; set; }
+
         public string ToQueryString()
         {
-            var ip = "";
             var jsonFormat = JsonFormat ? "1" : "0";
-            return $"gt={Id}&json_format={jsonFormat}&sdk=Geetest.Core&client_type=Geetest.Core&ip_address={ip}";
+            return
+                $"gt={Id}&json_format={jsonFormat}&user_id={_clientInfoProvider.UserId}&sdk={_clientInfoProvider.Sdk}&client_type={_clientInfoProvider.ClientType}&ip_address={_clientInfoProvider.IpAddress}";
         }
     }
 }

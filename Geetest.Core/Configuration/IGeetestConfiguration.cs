@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Geetest.Core.Configuration
+﻿namespace Geetest.Core.Configuration
 {
     public interface IGeetestConfiguration
     {
@@ -24,5 +20,4 @@ namespace Geetest.Core.Configuration
 
         string ToQueryString();
     }
-
 }

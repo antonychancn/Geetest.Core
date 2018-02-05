@@ -1,4 +1,4 @@
-@page
+锘緻page
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
@@ -10,28 +10,28 @@
     <div class="col-md-4">
         <form asp-route-returnUrl="@Model.ReturnUrl" method="post" id="registerForm">
             <h4>Create a new account.</h4>
-            <hr />
+            <hr/>
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Input.Email"></label>
-                <input asp-for="Input.Email" class="form-control" />
+                <input asp-for="Input.Email" class="form-control"/>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.Password"></label>
-                <input asp-for="Input.Password" class="form-control" />
+                <input asp-for="Input.Password" class="form-control"/>
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.ConfirmPassword"></label>
-                <input asp-for="Input.ConfirmPassword" class="form-control" />
+                <input asp-for="Input.ConfirmPassword" class="form-control"/>
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <div id="captcha"></div>
-                <input type="hidden" name="Input.challenge" id="geetest_challenge" />
-                <input type="hidden" name="Input.validate" id="geetest_validate" />
-                <input type="hidden" name="Input.seccode" id="geetest_seccode" />
+                <input type="hidden" name="Input.challenge" id="geetest_challenge"/>
+                <input type="hidden" name="Input.validate" id="geetest_validate"/>
+                <input type="hidden" name="Input.seccode" id="geetest_seccode"/>
             </div>
             <button type="submit" class="btn btn-default">Register</button>
         </form>
@@ -46,13 +46,13 @@
             url: "/api/Geetest?t=" + (new Date()).getTime(),
             type: "get",
             dataType: "json",
-            success: function (data) {
+            success: function(data) {
 
                 initGeetest({
                         gt: data.gt,
                         challenge: data.challenge,
                         offline: !data.success,
-                        new_captcha: data.new_captcha,
+                        new_captcha: data.newCaptcha,
 
                         product: "float", //
                         width: "100%"
@@ -61,20 +61,21 @@
                     },
                     function(captchaObj) {
                         captchaObj.appendTo(document.getElementById('captcha'));
-                        $("#registerForm").data("captcha", captchaObj).data("validator").settings.submitHandler = function(form) {
-                            var captcha = $(form).data("captcha");
+                        $("#registerForm").data("captcha", captchaObj).data("validator").settings.submitHandler =
+                            function(form) {
+                                var captcha = $(form).data("captcha");
 
-                            var validate = captcha.getValidate();
-                            if (validate == undefined) {
-                                alert("请完成验证码!");
-                                return false;
-                            }
+                                var validate = captcha.getValidate();
+                                if (validate == undefined) {
+                                    alert("璇峰畬鎴愰獙璇佺爜!");
+                                    return false;
+                                }
 
-                            $("#geetest_challenge").val(validate.geetest_challenge);
-                            $("#geetest_validate").val(validate.geetest_validate);
-                            $("#geetest_seccode").val(validate.geetest_seccode);
-                            return true;
-                        };
+                                $("#geetest_challenge").val(validate.geetest_challenge);
+                                $("#geetest_validate").val(validate.geetest_validate);
+                                $("#geetest_seccode").val(validate.geetest_seccode);
+                                return true;
+                            };
                     });
             }
         });

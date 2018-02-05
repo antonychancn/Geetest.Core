@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -13,7 +9,7 @@ namespace Geetest.Core.Mvc.Pages.Account.Manage
 
         public IActionResult OnGet()
         {
-            RecoveryCodes = (string[])TempData["RecoveryCodes"];
+            RecoveryCodes = (string[]) TempData["RecoveryCodes"];
             if (RecoveryCodes == null)
             {
                 return RedirectToPage("TwoFactorAuthentication");

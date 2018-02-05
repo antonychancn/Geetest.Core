@@ -1,20 +1,16 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Geetest.Core.Configuration;
+using Geetest.Core.Mvc.Data;
+using Geetest.Core.Mvc.Services;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Geetest.Core.Mvc.Data;
-using Geetest.Core.Mvc.Services;
 
 namespace Geetest.Core.Mvc
 {
@@ -57,14 +53,17 @@ namespace Geetest.Core.Mvc
             builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(IGeetestManager)))
                 .AsImplementedInterfaces();
 
-            builder.Register(c => new GeetestConfiguration
-            {
-                Id = "624b8993f3ff3cf5111cc95a92355da8",
-                Key = "4dd6927f03b8b600ca821830e66bb7f6"
-            }).As<IGeetestConfiguration>().SingleInstance();
-
             builder.Populate(services);
-            return new AutofacServiceProvider(builder.Build());
+
+            builder.RegisterType<GeetestConfiguration>().As<IGeetestConfiguration>().SingleInstance();
+
+            var iocContainer = builder.Build();
+
+            var geetestConfig = iocContainer.Resolve<IGeetestConfiguration>();
+            geetestConfig.Id = "624b8993f3ff3cf5111cc95a92355da8";
+            geetestConfig.Key = "4dd6927f03b8b600ca821830e66bb7f6";
+
+            return new AutofacServiceProvider(iocContainer);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

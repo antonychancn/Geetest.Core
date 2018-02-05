@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model LoginModel
 
 @{
@@ -11,28 +11,29 @@
         <section>
             <form method="post" id="loginForm">
                 <h4>Use a local account to log in.</h4>
-                <hr />
+                <hr/>
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="Input.Email"></label>
-                    <input asp-for="Input.Email" class="form-control" />
+                    <input asp-for="Input.Email" class="form-control"/>
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Input.Password"></label>
-                    <input asp-for="Input.Password" class="form-control" />
+                    <input asp-for="Input.Password" class="form-control"/>
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <div id="captcha"></div>
-                    <input type="hidden" name="Input.challenge" id="geetest_challenge" />
-                    <input type="hidden" name="Input.validate" id="geetest_validate" />
-                    <input type="hidden" name="Input.seccode" id="geetest_seccode" />
+                    <input type="hidden" name="Input.offline" id="geetest_offline" value="false"/>
+                    <input type="hidden" name="Input.challenge" id="geetest_challenge"/>
+                    <input type="hidden" name="Input.validate" id="geetest_validate"/>
+                    <input type="hidden" name="Input.seccode" id="geetest_seccode"/>
                 </div>
                 <div class="form-group">
                     <div class="checkbox">
                         <label asp-for="Input.RememberMe">
-                            <input asp-for="Input.RememberMe" />
+                            <input asp-for="Input.RememberMe"/>
                             @Html.DisplayNameFor(m => m.Input.RememberMe)
                         </label>
                     </div>
@@ -54,7 +55,7 @@
     <div class="col-md-6 col-md-offset-2">
         <section>
             <h4>Use another service to log in.</h4>
-            <hr />
+            <hr/>
             @{
                 if ((Model.ExternalLogins?.Count ?? 0) == 0)
                 {
@@ -84,42 +85,43 @@
 </div>
 
 @section Scripts {
-    @await  Html.PartialAsync("_ValidationScriptsPartial")
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 
     <script>
         $.ajax({
             url: "/api/Geetest?t=" + (new Date()).getTime(),
             type: "get",
             dataType: "json",
-            success: function (data) {
-
+            success: function(data) {
+                if (!data.success) {
+                    $("#geetest_offline").val("true");
+                }
                 initGeetest({
                         gt: data.gt,
                         challenge: data.challenge,
                         offline: !data.success,
-                        new_captcha: data.new_captcha,
+                        new_captcha: data.newCaptcha,
 
-                        product: "float", //
+                        product: "float",
                         width: "100%"
-
-                        // http://docs.geetest.com/install/client/web-front/
                     },
                     function(captchaObj) {
                         captchaObj.appendTo(document.getElementById('captcha'));
-                        $("#loginForm").data("captcha", captchaObj).data("validator").settings.submitHandler = function(form) {
-                            var captcha = $(form).data("captcha");
+                        $("#loginForm").data("captcha", captchaObj).data("validator").settings.submitHandler =
+                            function(form) {
+                                var captcha = $(form).data("captcha");
 
-                            var validate = captcha.getValidate();
-                            if (validate == undefined) {
-                                alert("请完成验证码!");
-                                return false;
-                            }
+                                var validate = captcha.getValidate();
+                                if (validate == undefined || !validate) {
+                                    alert("请完成验证码!");
+                                    return false;
+                                }
 
-                            $("#geetest_challenge").val(validate.geetest_challenge);
-                            $("#geetest_validate").val(validate.geetest_validate);
-                            $("#geetest_seccode").val(validate.geetest_seccode);
-                            return true;
-                        };
+                                $("#geetest_challenge").val(validate.geetest_challenge);
+                                $("#geetest_validate").val(validate.geetest_validate);
+                                $("#geetest_seccode").val(validate.geetest_seccode);
+                                return true;
+                            };
                     });
             }
         });
